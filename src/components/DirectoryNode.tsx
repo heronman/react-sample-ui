@@ -1,7 +1,8 @@
-import { useState, type CSSProperties } from 'react'
+import type { CSSProperties } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { listDirectory } from '../api/fsApi'
 import type { FsEntry } from '../types'
+import { isAncestorOrSelf } from '../utils/treePath.ts'
 import FileNode from './FileNode.tsx'
 import TreeRow from './TreeRow.tsx'
 import type { Selection } from './DetailsPanel.tsx'
@@ -10,7 +11,8 @@ interface DirectoryNodeProps {
   path: string
   label: string
   depth: number
-  defaultExpanded?: boolean
+  expandedPath: string | null
+  onToggleExpand: (path: string) => void
   selectedPath?: string
   onSelect: (selection: Selection) => void
 }
@@ -19,11 +21,12 @@ function DirectoryNode({
   path,
   label,
   depth,
-  defaultExpanded,
+  expandedPath,
+  onToggleExpand,
   selectedPath,
   onSelect,
 }: DirectoryNodeProps) {
-  const [expanded, setExpanded] = useState(Boolean(defaultExpanded))
+  const expanded = expandedPath !== null && isAncestorOrSelf(path, expandedPath)
 
   const {
     data: children,
@@ -54,7 +57,7 @@ function DirectoryNode({
         }
         trailing={isFetching && <span className="spinner" aria-hidden="true" />}
         onClick={() => {
-          setExpanded((prev) => !prev)
+          onToggleExpand(path)
           onSelect({ path, name: label, isDirectory: true })
         }}
       />
@@ -85,6 +88,8 @@ function DirectoryNode({
                     path={child.path}
                     label={child.name}
                     depth={depth + 1}
+                    expandedPath={expandedPath}
+                    onToggleExpand={onToggleExpand}
                     selectedPath={selectedPath}
                     onSelect={onSelect}
                   />

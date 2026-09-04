@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 import DirectoryNode from './DirectoryNode'
 import DetailsPanel, { type Selection } from './DetailsPanel.tsx'
+import { isAncestorOrSelf, parentPath } from '../utils/treePath.ts'
 import './FileTree.css'
 
 const ROOT_PATH = ''
@@ -10,9 +11,20 @@ function FileTree() {
   const queryClient = useQueryClient()
   const isRefreshing = useIsFetching({ queryKey: ['fs-entries'] }) > 0
   const [selection, setSelection] = useState<Selection | null>(null)
+  const [expandedPath, setExpandedPath] = useState<string | null>(ROOT_PATH)
 
   const refreshAll = () => {
     queryClient.invalidateQueries({ queryKey: ['fs-entries'] })
+  }
+
+  // Only one branch of the tree stays open at a time: opening a folder
+  // collapses every node that isn't on its path.
+  const toggleExpand = (path: string) => {
+    setExpandedPath((current) => {
+      const isOpen = current !== null && isAncestorOrSelf(path, current)
+      if (!isOpen) return path
+      return path === ROOT_PATH ? null : parentPath(path)
+    })
   }
 
   return (
@@ -31,7 +43,8 @@ function FileTree() {
               path={ROOT_PATH}
               label="/"
               depth={0}
-              defaultExpanded
+              expandedPath={expandedPath}
+              onToggleExpand={toggleExpand}
               selectedPath={selection?.path}
               onSelect={setSelection}
             />
