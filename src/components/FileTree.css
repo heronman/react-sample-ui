@@ -20,6 +20,26 @@
   margin: 0;
 }
 
+.file-tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input {
+  cursor: pointer;
+}
+
 .file-tree-header button {
   font-family: var(--sans);
   font-size: 14px;

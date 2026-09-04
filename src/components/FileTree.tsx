@@ -12,6 +12,7 @@ function FileTree() {
   const isRefreshing = useIsFetching({ queryKey: ['fs-entries'] }) > 0
   const [selection, setSelection] = useState<Selection | null>(null)
   const [expandedPath, setExpandedPath] = useState<string | null>(ROOT_PATH)
+  const [showHidden, setShowHidden] = useState(false)
 
   const refreshAll = () => {
     queryClient.invalidateQueries({ queryKey: ['fs-entries'] })
@@ -31,9 +32,19 @@ function FileTree() {
     <div className="file-tree">
       <header className="file-tree-header">
         <h1>Файловая система</h1>
-        <button type="button" onClick={refreshAll} disabled={isRefreshing}>
-          {isRefreshing ? 'Обновление…' : 'Refresh'}
-        </button>
+        <div className="file-tree-actions">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={showHidden}
+              onChange={(e) => setShowHidden(e.target.checked)}
+            />
+            Показывать скрытые файлы
+          </label>
+          <button type="button" onClick={refreshAll} disabled={isRefreshing}>
+            {isRefreshing ? 'Обновление…' : 'Refresh'}
+          </button>
+        </div>
       </header>
 
       <div className="file-tree-body">
@@ -47,11 +58,12 @@ function FileTree() {
               onToggleExpand={toggleExpand}
               selectedPath={selection?.path}
               onSelect={setSelection}
+              showHidden={showHidden}
             />
           </ul>
         </div>
 
-        <DetailsPanel selection={selection} />
+        <DetailsPanel selection={selection} showHidden={showHidden} />
       </div>
     </div>
   )

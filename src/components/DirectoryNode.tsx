@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { listDirectory } from '../api/fsApi'
 import type { FsEntry } from '../types'
 import { isAncestorOrSelf } from '../utils/treePath.ts'
+import { isHiddenName } from '../utils/isHiddenName.ts'
 import FileNode from './FileNode.tsx'
 import TreeRow from './TreeRow.tsx'
 import type { Selection } from './DetailsPanel.tsx'
@@ -15,6 +16,7 @@ interface DirectoryNodeProps {
   onToggleExpand: (path: string) => void
   selectedPath?: string
   onSelect: (selection: Selection) => void
+  showHidden: boolean
 }
 
 function DirectoryNode({
@@ -25,11 +27,12 @@ function DirectoryNode({
   onToggleExpand,
   selectedPath,
   onSelect,
+  showHidden,
 }: DirectoryNodeProps) {
   const expanded = expandedPath !== null && isAncestorOrSelf(path, expandedPath)
 
   const {
-    data: children,
+    data: allChildren,
     error,
     isFetching,
     refetch,
@@ -39,6 +42,7 @@ function DirectoryNode({
     enabled: expanded,
   })
 
+  const children = showHidden ? allChildren : allChildren?.filter((c) => !isHiddenName(c.name))
   const loaded = children !== undefined
 
   return (
@@ -92,6 +96,7 @@ function DirectoryNode({
                     onToggleExpand={onToggleExpand}
                     selectedPath={selectedPath}
                     onSelect={onSelect}
+                    showHidden={showHidden}
                   />
                 ) : (
                   <FileNode

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { listDirectory } from '../api/fsApi'
 import type { FsEntry } from '../types'
 import { formatSize } from '../utils/formatSize.ts'
+import { isHiddenName } from '../utils/isHiddenName.ts'
 
 export interface Selection {
   path: string
@@ -15,9 +16,10 @@ export interface Selection {
 
 interface DetailsPanelProps {
   selection: Selection | null
+  showHidden: boolean
 }
 
-function DetailsPanel({ selection }: DetailsPanelProps) {
+function DetailsPanel({ selection, showHidden }: DetailsPanelProps) {
   if (!selection) {
     return (
       <div className="details-panel">
@@ -27,21 +29,31 @@ function DetailsPanel({ selection }: DetailsPanelProps) {
   }
 
   return selection.isDirectory ? (
-    <DirectoryListing path={selection.path} label={selection.name} />
+    <DirectoryListing path={selection.path} label={selection.name} showHidden={showHidden} />
   ) : (
     <FileMetadata selection={selection} />
   )
 }
 
-function DirectoryListing({ path, label }: { path: string; label: string }) {
+function DirectoryListing({
+  path,
+  label,
+  showHidden,
+}: {
+  path: string
+  label: string
+  showHidden: boolean
+}) {
   const {
-    data: entries,
+    data: allEntries,
     error,
     isLoading,
   } = useQuery<FsEntry[], Error>({
     queryKey: ['fs-entries', path],
     queryFn: () => listDirectory(path),
   })
+
+  const entries = showHidden ? allEntries : allEntries?.filter((e) => !isHiddenName(e.name))
 
   return (
     <div className="details-panel">
