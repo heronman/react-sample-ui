@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react'
 import { formatSize } from '../utils/formatSize.ts'
 import type { Selection } from './DetailsPanel.tsx'
+import TreeRow from './TreeRow.tsx'
 
 interface FileNodeProps {
   depth: number
@@ -27,20 +27,17 @@ function FileNode({
 }: FileNodeProps) {
   return (
     <li className="tree-item">
-      <button
-        type="button"
-        className={`tree-row tree-file${selected ? ' selected' : ''}`}
-        style={{ '--depth': depth } as CSSProperties}
+      <TreeRow
+        variant="file"
+        depth={depth}
+        icon="📄"
+        name={name}
+        selected={selected}
         onClick={() =>
           onSelect({ path, name, isDirectory: false, size, lastModified, isSymlink, isBroken })
         }
-      >
-        <span className="icon" aria-hidden="true">
-          📄
-        </span>
-        <span className="name">{name}</span>
-        {formatSize(size) && <span className="size">{formatSize(size)}</span>}
-      </button>
+        trailing={formatSize(size) && <span className="size">{formatSize(size)}</span>}
+      />
     </li>
   )
 }

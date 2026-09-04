@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { listDirectory } from '../api/fsApi'
 import type { FsEntry } from '../types'
 import FileNode from './FileNode.tsx'
+import TreeRow from './TreeRow.tsx'
 import type { Selection } from './DetailsPanel.tsx'
 
 interface DirectoryNodeProps {
@@ -39,25 +40,24 @@ function DirectoryNode({
 
   return (
     <li className="tree-item">
-      <button
-        type="button"
-        className={`tree-row tree-dir${selectedPath === path ? ' selected' : ''}`}
-        style={{ '--depth': depth } as CSSProperties}
+      <TreeRow
+        variant="dir"
+        depth={depth}
+        icon="📁"
+        name={label}
+        selected={selectedPath === path}
+        ariaExpanded={expanded}
+        chevron={
+          <span className={`chevron${expanded ? ' open' : ''}`} aria-hidden="true">
+            ▶
+          </span>
+        }
+        trailing={isFetching && <span className="spinner" aria-hidden="true" />}
         onClick={() => {
           setExpanded((prev) => !prev)
           onSelect({ path, name: label, isDirectory: true })
         }}
-        aria-expanded={expanded}
-      >
-        <span className={`chevron${expanded ? ' open' : ''}`} aria-hidden="true">
-          ▶
-        </span>
-        <span className="icon" aria-hidden="true">
-          📁
-        </span>
-        <span className="name">{label}</span>
-        {isFetching && <span className="spinner" aria-hidden="true" />}
-      </button>
+      />
 
       {expanded && (
         <div className="tree-children">
