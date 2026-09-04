@@ -2,12 +2,18 @@ import type { FsEntry } from '../types'
 
 const BASE_URL = (import.meta.env.VITE_FS_API_URL ?? '').replace(/\/+$/, '')
 
-// Shape of components.schemas.FileEntry in docs/openapi.json
+// Shape of components.schemas.FileEntry in docs/openapi.json.
+// The live server actually serializes these two as `isDirectory`/
+// `isSymlink`, not the `directory`/`symlink` the spec documents (likely
+// a Jackson quirk with `is`-prefixed boolean fields) — accept both so
+// we don't silently misclassify every entry as a file if that changes.
 interface FileEntryDto {
   name: string
   path: string
-  directory: boolean
-  symlink: boolean
+  directory?: boolean
+  isDirectory?: boolean
+  symlink?: boolean
+  isSymlink?: boolean
   broken: boolean
   size?: number
   lastModified?: number
@@ -39,8 +45,8 @@ function normalizeEntry(raw: FileEntryDto): FsEntry {
   return {
     name: raw.name,
     path: raw.path,
-    isDirectory: raw.directory,
-    isSymlink: raw.symlink,
+    isDirectory: raw.directory ?? raw.isDirectory ?? false,
+    isSymlink: raw.symlink ?? raw.isSymlink ?? false,
     isBroken: raw.broken,
     size: raw.size,
     lastModified: raw.lastModified,
@@ -49,5 +55,14 @@ function normalizeEntry(raw: FileEntryDto): FsEntry {
 
 function compareEntries(a: FsEntry, b: FsEntry): number {
   if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1
-  return a.name.localeCompare(b.name)
+  return compareNames(a.name, b.name)
+}
+
+// Case-insensitive, but breaks ties between same-letter-different-case
+// names by putting uppercase first (A < a < c, since 'A' < 'a' by code
+// point once letter order is otherwise equal): "Apple" before "apple".
+function compareNames(a: string, b: string): number {
+  const caseInsensitive = a.localeCompare(b, undefined, { sensitivity: 'accent' })
+  if (caseInsensitive !== 0) return caseInsensitive
+  return a < b ? -1 : a > b ? 1 : 0
 }
