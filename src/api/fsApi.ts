@@ -58,11 +58,21 @@ function compareEntries(a: FsEntry, b: FsEntry): number {
   return compareNames(a.name, b.name)
 }
 
-// Case-insensitive, but breaks ties between same-letter-different-case
-// names by putting uppercase first (A < a < c, since 'A' < 'a' by code
-// point once letter order is otherwise equal): "Apple" before "apple".
+// Character-by-character: same letter sorts before the next letter
+// regardless of case, but within the same letter, uppercase sorts
+// before lowercase (A < a < B < b < C < c < ...). Case is resolved as
+// soon as it's the first thing two names differ on, not deferred to a
+// whole-name tiebreak — so "Desktop" < "Documents" < "devel", not
+// "Desktop" < "devel" < "Documents".
 function compareNames(a: string, b: string): number {
-  const caseInsensitive = a.localeCompare(b, undefined, { sensitivity: 'accent' })
-  if (caseInsensitive !== 0) return caseInsensitive
-  return a < b ? -1 : a > b ? 1 : 0
+  const len = Math.min(a.length, b.length)
+  for (let i = 0; i < len; i++) {
+    const charA = a[i]
+    const charB = b[i]
+    const lowerA = charA.toLowerCase()
+    const lowerB = charB.toLowerCase()
+    if (lowerA !== lowerB) return lowerA < lowerB ? -1 : 1
+    if (charA !== charB) return charA === lowerA ? 1 : -1
+  }
+  return a.length - b.length
 }
