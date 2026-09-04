@@ -23,7 +23,7 @@ function DetailsPanel({ selection, showHidden }: DetailsPanelProps) {
   if (!selection) {
     return (
       <div className="details-panel">
-        <p className="details-placeholder">Выберите каталог или файл в дереве слева</p>
+        <p className="details-placeholder">Select a folder or file in the tree on the left</p>
       </div>
     )
   }
@@ -59,9 +59,9 @@ function DirectoryListing({
     <div className="details-panel">
       <h2 className="details-title">{label}</h2>
 
-      {isLoading && <p className="details-status">Загрузка…</p>}
+      {isLoading && <p className="details-status">Loading…</p>}
       {error && <p className="details-status details-error">{error.message}</p>}
-      {entries && entries.length === 0 && <p className="details-status">Каталог пуст</p>}
+      {entries && entries.length === 0 && <p className="details-status">Folder is empty</p>}
 
       {entries && entries.length > 0 && (
         <ul className="details-list">
@@ -88,30 +88,30 @@ function FileMetadata({ selection }: { selection: Selection }) {
     <div className="details-panel">
       <h2 className="details-title">{selection.name}</h2>
       <dl className="details-meta">
-        <dt>Путь</dt>
+        <dt>Path</dt>
         <dd>{selection.path}</dd>
-        <dt>Тип</dt>
-        <dd>Файл</dd>
+        <dt>Type</dt>
+        <dd>File</dd>
         {extension && (
           <>
-            <dt>Расширение</dt>
+            <dt>Extension</dt>
             <dd>.{extension}</dd>
           </>
         )}
-        <dt>Размер</dt>
+        <dt>Size</dt>
         <dd>{formatSize(selection.size) ?? '—'}</dd>
-        <dt>Изменён</dt>
+        <dt>Modified</dt>
         <dd>{formatDate(selection.lastModified) ?? '—'}</dd>
         {selection.isSymlink && (
           <>
-            <dt>Символическая ссылка</dt>
-            <dd>Да</dd>
+            <dt>Symlink</dt>
+            <dd>Yes</dd>
           </>
         )}
         {selection.isBroken && (
           <>
-            <dt>Статус</dt>
-            <dd className="details-error">Битая ссылка</dd>
+            <dt>Status</dt>
+            <dd className="details-error">Broken link</dd>
           </>
         )}
       </dl>

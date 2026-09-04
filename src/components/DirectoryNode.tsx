@@ -72,14 +72,14 @@ function DirectoryNode({
             <div className="tree-error" style={{ '--depth': depth + 1 } as CSSProperties}>
               {error.message}
               <button type="button" className="link-button" onClick={() => refetch()}>
-                Повторить
+                Retry
               </button>
             </div>
           )}
 
           {!error && loaded && children.length === 0 && (
             <div className="tree-empty" style={{ '--depth': depth + 1 } as CSSProperties}>
-              Пусто
+              Empty
             </div>
           )}
 

@@ -31,7 +31,7 @@ function FileTree() {
   return (
     <div className="file-tree">
       <header className="file-tree-header">
-        <h1>Файловая система</h1>
+        <h1>File System</h1>
         <div className="file-tree-actions">
           <label className="checkbox-label">
             <input
@@ -39,10 +39,10 @@ function FileTree() {
               checked={showHidden}
               onChange={(e) => setShowHidden(e.target.checked)}
             />
-            Показывать скрытые файлы
+            Show hidden files
           </label>
           <button type="button" onClick={refreshAll} disabled={isRefreshing}>
-            {isRefreshing ? 'Обновление…' : 'Refresh'}
+            {isRefreshing ? 'Refreshing…' : 'Refresh'}
           </button>
         </div>
       </header>

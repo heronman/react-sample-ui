@@ -35,7 +35,7 @@ async function fetchEntry(path: string): Promise<FileEntryDto> {
 
   const res = await fetch(url, { headers: { Accept: 'application/json' } })
   if (!res.ok) {
-    throw new Error(`Не удалось прочитать «${path || '/'}» (${res.status})`)
+    throw new Error(`Failed to read "${path || '/'}" (${res.status})`)
   }
 
   return res.json()
