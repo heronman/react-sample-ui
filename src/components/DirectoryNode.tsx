@@ -95,6 +95,9 @@ function DirectoryNode({
                     path={child.path}
                     name={child.name}
                     size={child.size}
+                    lastModified={child.lastModified}
+                    isSymlink={child.isSymlink}
+                    isBroken={child.isBroken}
                     selected={selectedPath === child.path}
                     onSelect={onSelect}
                   />

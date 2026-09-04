@@ -8,6 +8,9 @@ export interface Selection {
   name: string
   isDirectory: boolean
   size?: number
+  lastModified?: number
+  isSymlink?: boolean
+  isBroken?: boolean
 }
 
 interface DetailsPanelProps {
@@ -85,9 +88,28 @@ function FileMetadata({ selection }: { selection: Selection }) {
         )}
         <dt>Размер</dt>
         <dd>{formatSize(selection.size) ?? '—'}</dd>
+        <dt>Изменён</dt>
+        <dd>{formatDate(selection.lastModified) ?? '—'}</dd>
+        {selection.isSymlink && (
+          <>
+            <dt>Символическая ссылка</dt>
+            <dd>Да</dd>
+          </>
+        )}
+        {selection.isBroken && (
+          <>
+            <dt>Статус</dt>
+            <dd className="details-error">Битая ссылка</dd>
+          </>
+        )}
       </dl>
     </div>
   )
+}
+
+function formatDate(timestamp: number | undefined): string | null {
+  if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) return null
+  return new Date(timestamp).toLocaleString()
 }
 
 export default DetailsPanel
