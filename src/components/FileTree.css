@@ -1,5 +1,6 @@
 .file-tree {
   text-align: left;
+  width: 100%;
   max-width: 1080px;
   margin: 0 auto;
   padding: 32px 20px;
@@ -49,8 +50,7 @@
   flex: 1 1 360px;
   min-width: 0;
   height: 480px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
   border: 1px solid var(--border);
   border-radius: 8px;
   overscroll-behavior: contain;
@@ -102,10 +102,17 @@
 
 .details-list-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
   padding: 6px 0;
   color: var(--text-h);
+}
+
+.details-list-item .name {
+  min-width: 0;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-all;
 }
 
 .details-meta {
@@ -139,7 +146,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   box-sizing: border-box;
   padding: 6px 12px 6px calc(12px + var(--depth) * 18px);
   background: none;
@@ -176,8 +184,6 @@ button.tree-row:hover {
 }
 
 .name {
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
